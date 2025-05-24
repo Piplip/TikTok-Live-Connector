@@ -23,8 +23,7 @@ import {
     WebcastEventMap
 } from '@/types/events';
 import { IWebcastRoomChatPayload, IWebcastRoomChatRouteResponse } from '@eulerstream/euler-api-sdk';
-import { ProtoMessageFetchResult } from '@/types';
-import { ControlAction } from '@/types/tiktok/enums';
+import { ControlAction, ProtoMessageFetchResult } from '@/types';
 
 
 export class TikTokLiveConnection extends (EventEmitter as new () => TypedEventEmitter<ClientEventMap>) {

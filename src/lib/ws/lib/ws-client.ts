@@ -2,11 +2,11 @@ import { client as WebSocket, connection as WebSocketConnection, Message as WebS
 import * as http from 'node:http';
 import { BinaryWriter } from '@bufbuild/protobuf/wire';
 import { DecodedWebcastPushFrame, WebSocketParams } from '@/types/client';
-import { HeartbeatFrame, WebSocketAckMessage } from '@/types/tiktok/webcast';
 import { deserializeWebSocketMessage } from '@/lib/utilities';
 import Config from '@/lib/config';
 import TypedEventEmitter from 'typed-emitter';
 import CookieJar from '@/lib/web/lib/cookie-jar';
+import { WebSocketAckMessage } from '@/types';
 
 
 type EventMap = {
@@ -112,9 +112,7 @@ export default class TikTokWsClient extends (WebSocket as WebSocketConstructor) 
      * Static Keep-Alive ping
      */
     protected sendHeartbeat() {
-        const { roomId } = this.webSocketParams;
-        const container = HeartbeatFrame.fromPartial({ roomInfo: { roomId: roomId } });
-        this.sendBytes(HeartbeatFrame.encode(container).finish());
+        this.sendBytes(Buffer.from('3A026862', 'hex'));
     }
 
     /**

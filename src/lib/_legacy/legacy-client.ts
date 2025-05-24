@@ -1,4 +1,4 @@
-import { ProtoMessageFetchResult, WebcastControlMessage } from '@/types/tiktok/webcast';
+import { ProtoMessageFetchResult, WebcastControlMessage } from '@/types/tiktok-schema';
 import { EventEmitter } from 'node:events';
 import { simplifyObject } from '@/lib/_legacy/data-converter';
 import { TikTokLiveConnection } from '@/lib';

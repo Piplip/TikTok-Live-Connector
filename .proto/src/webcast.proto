@@ -3,6 +3,7 @@ syntax = "proto3";
 import "data.proto";
 import "enums.proto";
 
+package TikTok;
 
 message Message {
     string type = 1;

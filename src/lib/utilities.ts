@@ -1,5 +1,5 @@
-import * as tikTokSchema from '@/types/tiktok/webcast';
-import { MessageFns, ProtoMessageFetchResult, WebcastPushFrame } from '@/types/tiktok/webcast';
+import * as tikTokSchema from '@/types/tiktok-schema';
+import { MessageFns, ProtoMessageFetchResult, WebcastPushFrame } from '@/types/tiktok-schema';
 import {
     DecodedWebcastPushFrame,
     IWebcastDeserializeConfig,
@@ -12,7 +12,7 @@ import { InvalidSchemaNameError, InvalidUniqueIdError } from '@/types/errors';
 import { DevicePreset } from '@/lib/config';
 
 const unzip = util.promisify(zlib.unzip);
-const webcastEvents: (keyof WebcastMessage)[] = Object.keys(tikTokSchema).filter((message) => message.startsWith('Webcast')) as (keyof WebcastMessage)[];
+const webcastEvents: (keyof WebcastEventMessage)[] = Object.keys(tikTokSchema).filter((message) => message.startsWith('Webcast')) as (keyof WebcastEventMessage)[];
 
 export const WebcastDeserializeConfig: IWebcastDeserializeConfig = {
     skipMessageTypes: []
@@ -48,7 +48,7 @@ export function deserializeMessage<T extends keyof WebcastMessage>(
                 continue;
             }
 
-            if (!webcastEvents.includes(message.type as keyof WebcastMessage)) {
+            if (!webcastEvents.includes(message.type as keyof WebcastEventMessage)) {
                 continue;
             }
 

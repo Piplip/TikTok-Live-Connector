@@ -1,7 +1,7 @@
-import * as tikTokSchema from './tiktok/webcast';
-import { MessageFns, ProtoMessageFetchResult, WebcastPushFrame } from './tiktok/webcast';
 import { AxiosRequestConfig } from 'axios';
 import * as http from 'node:http';
+import * as tikTokSchema from '@/types/tiktok-schema';
+import { MessageFns, ProtoMessageFetchResult, WebcastPushFrame } from '@/types/tiktok-schema';
 
 export type TikTokLiveConnectionOptions = {
     processInitialData: boolean;
@@ -100,6 +100,11 @@ export interface IWebcastDeserializeConfig {
 }
 
 
+export interface IWebcastDeserializeConfig {
+    skipMessageTypes: (keyof WebcastEventMessage)[];
+}
+
+
 export type DecodedData = {
     [K in keyof WebcastEventMessage]: {
         type: K;
@@ -107,7 +112,7 @@ export type DecodedData = {
     }
 }[keyof WebcastEventMessage];
 
-declare module '@/types/tiktok/webcast' {
+declare module '@/types/tiktok-schema' {
     export interface BaseProtoMessage {
         decodedData?: DecodedData;
     }

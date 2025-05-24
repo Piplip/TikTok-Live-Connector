@@ -1,4 +1,5 @@
 import {
+    ControlAction,
     WebcastChatMessage,
     WebcastControlMessage,
     WebcastEmoteChatMessage,
@@ -13,10 +14,9 @@ import {
     WebcastRoomUserSeqMessage,
     WebcastSocialMessage,
     WebcastSubNotifyMessage
-} from '@/types/tiktok/webcast';
+} from '@/types//tiktok-schema';
 import { RoomGiftInfo, RoomInfo, WebcastEventMessage, WebcastMessage } from '@/types/client';
 import TikTokWsClient from '@/lib/ws/lib/ws-client';
-import { ControlAction } from '@/types/tiktok/enums';
 
 export enum ControlEvent {
     CONNECTED = 'connected',
