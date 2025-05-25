@@ -158,6 +158,7 @@ export function simplifyObject(
 }
 
 function getUserAttributes(webcastUser: Partial<User>): Record<string, any> {
+    webcastUser ||= {};
 
     const userAttributes: Record<string, any> = {
         userId: webcastUser.userId?.toString(),

@@ -1,4 +1,4 @@
-import { ProtoMessageFetchResult, WebcastControlMessage } from '@/types/tiktok-schema';
+import { BaseProtoMessage, ProtoMessageFetchResult, WebcastControlMessage } from '@/types/tiktok-schema';
 import { EventEmitter } from 'node:events';
 import { simplifyObject } from '@/lib/_legacy/data-converter';
 import { TikTokLiveConnection } from '@/lib';
@@ -19,8 +19,8 @@ export class WebcastPushConnection extends (TikTokLiveConnection as new (...args
 
         // Process and emit decoded data depending on the message type
         fetchResult.messages
-            .forEach((message) => {
-                let simplifiedObj = simplifyObject(message.type as keyof WebcastEventMessage, message.decodedData.data || {});
+            .forEach((message: BaseProtoMessage) => {
+                let simplifiedObj = simplifyObject(message.type as keyof WebcastEventMessage, message.decodedData?.data || {});
                 this.emit(ControlEvent.DECODED_DATA, message.type, simplifiedObj, message.payload);
 
                 switch (message.type) {
