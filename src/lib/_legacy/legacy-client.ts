@@ -3,6 +3,7 @@ import { EventEmitter } from 'node:events';
 import { simplifyObject } from '@/lib/_legacy/data-converter';
 import { TikTokLiveConnection } from '@/lib';
 import { ControlEvent, WebcastEvent } from '@/types/events';
+import { WebcastEventMessage } from '@/types';
 
 /**
  * The legacy WebcastPushConnection class for backwards compatibility.
@@ -19,7 +20,7 @@ export class WebcastPushConnection extends (TikTokLiveConnection as new (...args
         // Process and emit decoded data depending on the message type
         fetchResult.messages
             .forEach((message) => {
-                let simplifiedObj = simplifyObject(message.decodedData.data || {});
+                let simplifiedObj = simplifyObject(message.type as keyof WebcastEventMessage, message.decodedData.data || {});
                 this.emit(ControlEvent.DECODED_DATA, message.type, simplifiedObj, message.payload);
 
                 switch (message.type) {
