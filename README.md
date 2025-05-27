@@ -25,9 +25,7 @@ and [Battles](#linkmicbattle) can be tracked.
 > [!WARNING]
 > This JavaScript library is intended for use in [Node.js](https://nodejs.org/) environments. If you want to process or
 > display the data in the browser (client-side), you need to transfer the data from the Node.js environment to the
-> browser. A good approach for this is to use [Socket.IO](https://socket.io/) or a different low-latency communication
-> framework. A complete example project can be found
-> here: [TikTok-Chat-Reader](https://github.com/zerodytrash/TikTok-Chat-Reader)
+> browser. You can also use a WebSocket Server that handles this for you for free: https://www.eulerstream.com/docs/sign-server/websockets
 
 > [!WARNING]
 > Due to a change on the part of TikTok, versions prior **v1.1.7** are no longer functional. If you are using one of
