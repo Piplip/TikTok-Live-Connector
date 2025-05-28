@@ -12,7 +12,10 @@ import { InvalidSchemaNameError, InvalidUniqueIdError } from '@/types/errors';
 import { DevicePreset } from '@/lib/config';
 
 const unzip = util.promisify(zlib.unzip);
-const webcastEvents: (keyof WebcastEventMessage)[] = Object.keys(tikTokSchema).filter((message) => message.startsWith('Webcast')) as (keyof WebcastEventMessage)[];
+
+function hasProtoName(protoName: string): boolean {
+    return !!tikTokSchema[protoName];
+}
 
 export const WebcastDeserializeConfig: IWebcastDeserializeConfig = {
     skipMessageTypes: []
@@ -48,7 +51,7 @@ export function deserializeMessage<T extends keyof WebcastMessage>(
                 continue;
             }
 
-            if (!webcastEvents.includes(message.type as keyof WebcastEventMessage)) {
+            if (!hasProtoName(message.type)) {
                 continue;
             }
 
