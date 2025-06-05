@@ -2994,6 +2994,28 @@ enum BattleInviteType {
     BATTLE_INVITE_TYPE_AGAIN = 1;
 }
 
+/*
+Synthetic protobuf defs NOT encoded in the APK's *_ProtoDecoder.java classes (i.e. hidden)
+ */
+
+
+// Heartbeat message
+message HeartbeatMessage {
+    uint64 roomId = 1;
+}
+
+// Incoming & outbound messages
+message WebcastPushFrame {
+    int64 seqId = 1;
+    int64 logId = 2;
+    int64 service = 3;
+    int64 method = 4;
+    map<string, string> headers = 5;
+    string payloadEncoding = 6;
+    string payloadType = 7;
+    bytes payload = 8;
+}
+
 message Message {
     string type = 1;
     bytes binary = 2;
@@ -3878,74 +3900,7 @@ message UserImageBadgeImage {
     string url = 1;
 }
 
-// Websocket acknowledgment message
-message WebSocketAckMessage {
-    uint64 id = 2;
-    string type = 7;
-}
 
-
-// Message representing the room info
-message HeartbeatFrameRoomInfo {
-    uint64 room_id = 1;
-}
-
-// Message representing metadata field 6
-message HeartbeatFrameMetadataField6 {
-    uint32 unknown_1 = 14;
-}
-
-// Message representing metadata field 7
-message HeartbeatFrameMetadataField7 {
-    uint32 unknown_1 = 13;
-}
-
-// Heartbeat keepalive message
-message HeartbeatFrame {
-    HeartbeatFrameMetadataField6 metadata_field_6 = 6;
-    HeartbeatFrameMetadataField7 metadata_field_7 = 7;
-    HeartbeatFrameRoomInfo room_info = 8;
-}
-
-// TODO: In a future release, set client_enter=1 on both /im/fetch and WS url; this is what the web client does
-// Didn't do it because it requires an agent update & sign server update
-//         // Create a room enter container
-//        const container = ImEnterRoomMessagePushFrame.fromPartial({
-//            payloadType: "im_enter_room",
-//            payload: {
-//                roomId: roomId,
-//                unknown1: 12,
-//                role: "audience",
-//                cursor: cursor,
-//                unknown2: 0,
-//                unknown3: "0",
-//                unknown4: 0
-//            },
-//            metadata: {
-//                unknown1: 98
-//            }
-//        });
-message ImEnterRoomMessagePushFrame {
-
-    Metadata metadata = 6;
-    string payload_type = 7; // "im_enter_room"
-    ImEnterRoomMessage payload = 8;
-
-    message Metadata {
-        uint32 unknown1 = 14; // "98"
-    }
-
-    message ImEnterRoomMessage {
-        uint64 room_id = 1; // Room ID
-        uint32 unknown1 = 4; // "12"
-        string role = 5; // "audience"
-        string cursor = 6; // Cursor
-        optional int32  unknown2 = 7; // "0"
-        string unknown3 = 9; // "0"
-        optional int32 unknown4 = 10; // "0"
-    }
-
-}
 message WebcastBarrageMessage {
     CommonMessageData common = 1;
     BarrageEvent event = 2;
@@ -4058,25 +4013,8 @@ message WebcastBarrageMessage {
         Text content = 2;
         int64 height = 3;
     }
-
-
 }
 
-
-message WebcastPushFrame {
-    int64 seqId = 1;
-    int64 id = 2;
-    int64 service = 3;
-    int64 method = 4;
-    map<string, string> headers = 5;
-    string payloadEncoding = 6;
-    string type = 7;
-    bytes binary = 8;
-}
-
-
-// WebcastWebsocketMessage = WebcastPushFrame
-// WebcastResponse = ProtoMessageFetchResult
 
 // Response from TikTokServer. Container for Messages
 message ProtoMessageFetchResult {
@@ -4673,4 +4611,43 @@ message RoomVerifyMessage {
     string content = 3;
     int64 noticeType = 4;
     bool closeRoom = 5;
+}
+
+
+message WebcastBarrageMessage_Old {
+    CommonMessageData event = 1;
+    int32 msgType = 3;
+    Text content = 5;
+
+    message Text {
+        string key = 1;
+        string defaultPattern = 2;
+        repeated TextPiece pieces = 4;
+    }
+
+    message TextPiece {
+        int32 type = 1;
+        string stringValue = 11;
+        TextPieceUser userValue = 21;
+    }
+
+    message TextPieceUser {
+        User user = 1;
+        bool withColon = 2;
+    }
+
+}
+
+
+message WebcastImEnterRoomMessage {
+    int64 room_id = 1; // sent
+    string room_tag = 2; // Not sent, even when there is a hashtag on the room
+    string live_region = 3; // not sent
+    int64 live_id = 4; // "12" <- It's a STATIC value for all streams, I checked the decompiled proto
+    string identity = 5; // "audience"
+    string cursor = 6; // ""
+    int64 account_type = 7; // 0
+    int64 enter_unique_id = 8; // NOT sent
+    string filter_welcome_msg = 9; // "0"
+    bool is_anchor_continue_keep_msg = 10; // 0
 }
