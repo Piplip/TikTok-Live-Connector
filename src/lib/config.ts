@@ -229,8 +229,7 @@ const Config: IWebcastConfig = {
         'heartbeat_duration': '0',
         'resp_content_type': 'protobuf',
         'history_comment_count': '6',
-        // 'client_enter': '1',
-        // We think last_rtt means "last round trip time" in millis.
+        'client_enter': '1',
         'last_rtt': ((Math.random() * 100) + 100).toString()
     },
     DEFAULT_WS_CLIENT_PARAMS_APPEND_PARAMETER: '&version_code=270000',
