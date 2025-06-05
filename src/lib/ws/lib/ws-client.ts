@@ -2,12 +2,13 @@ import { client as WebSocket, connection as WebSocketConnection, Message as WebS
 import * as http from 'node:http';
 import { BinaryWriter } from '@bufbuild/protobuf/wire';
 import { DecodedWebcastPushFrame, WebSocketParams } from '@/types/client';
-import { deserializeWebSocketMessage } from '@/lib/utilities';
+import { createBaseWebcastPushFrame, deserializeWebSocketMessage } from '@/lib/utilities';
 import Config from '@/lib/config';
 import TypedEventEmitter from 'typed-emitter';
 import CookieJar from '@/lib/web/lib/cookie-jar';
-import { WebSocketAckMessage } from '@/types';
+import { HeartbeatMessage, WebcastImEnterRoomMessage } from '@/types';
 
+const textEncoder = new TextEncoder();
 
 type EventMap = {
     connect: (connection: WebSocketConnection) => void;
@@ -16,6 +17,7 @@ type EventMap = {
     unknownResponse: (message: WebSocketMessage) => void;
     protoMessageFetchResult: (response: any) => void;
     webSocketData: (data: Uint8Array) => void;
+    imEnteredRoom: (decodedContainer: DecodedWebcastPushFrame) => void;
 };
 
 type TypedWebSocket = WebSocket & TypedEventEmitter<EventMap>;
@@ -93,15 +95,22 @@ export default class TikTokWsClient extends (WebSocket as WebSocketConstructor) 
         try {
             const decodedContainer: DecodedWebcastPushFrame = await deserializeWebSocketMessage(message.binaryData);
 
-            // Always send an ACK for the message
-            if (decodedContainer.id != null) {
-                this.sendAck(decodedContainer.id);
-            }
-
-            // If the message is a protoMessageFetchResult, emit it
+            // If the message has a decoded protoMessageFetchResult, emit it
             if (decodedContainer.protoMessageFetchResult) {
+
+                // If it needs an ack, send the ack
+                if (decodedContainer.protoMessageFetchResult.needsAck) {
+                    this.sendAck(decodedContainer);
+                }
+
                 this.emit('protoMessageFetchResult', decodedContainer.protoMessageFetchResult);
             }
+
+            // If it's a room enter, emit
+            if (decodedContainer.payloadType === 'im_enter_room_resp') {
+                this.emit('imEnteredRoom', decodedContainer);
+            }
+
         } catch (err) {
             this.emit('messageDecodingFailed', err);
         }
@@ -112,16 +121,80 @@ export default class TikTokWsClient extends (WebSocket as WebSocketConstructor) 
      * Static Keep-Alive ping
      */
     protected sendHeartbeat() {
-        this.sendBytes(Buffer.from('3A026862', 'hex'));
+        const { room_id } = this.webSocketParams;
+
+        // Create the heartbeat
+        const hb: BinaryWriter = HeartbeatMessage.encode({ roomId: room_id });
+
+        // Wrap it in the WebcastPushFrame
+        const webcastPushFrame: BinaryWriter = createBaseWebcastPushFrame(
+            {
+                payloadEncoding: 'pb',
+                payloadType: 'hb',
+                payload: hb.finish(),
+                service: undefined,
+                method: undefined,
+                headers: {}
+            }
+        );
+
+        this.sendBytes(Buffer.from(webcastPushFrame.finish()));
     }
 
     /**
-     * Message Acknowledgement
-     * @param id The message id to acknowledge
+     * EXPERIMENTAL: Switch to a different TikTok LIVE room while connected to the WebSocket
+     * @param roomId The room ID to switch to
      */
-    protected sendAck(id: string): void {
-        const ackMessage: BinaryWriter = WebSocketAckMessage.encode({ type: 'ack', id });
-        this.connection.sendBytes(Buffer.from(ackMessage.finish()));
+    public switchRooms(roomId: string): void {
+
+        const imEnterRoomMessage: BinaryWriter = WebcastImEnterRoomMessage.encode(
+            {
+                roomId: roomId,
+                roomTag: '',
+                liveRegion: '',
+                liveId: '12', // Static value for all streams (via decompiled APK)
+                identity: 'audience',
+                cursor: '',
+                accountType: '0',
+                enterUniqueId: '',
+                filterWelcomeMsg: '0',
+                isAnchorContinueKeepMsg: false
+            }
+        );
+
+        const webcastPushFrame: BinaryWriter = createBaseWebcastPushFrame(
+            {
+                payloadEncoding: 'pb',
+                payloadType: 'im_enter_room',
+                payload: imEnterRoomMessage.finish()
+            }
+        );
+
+        this.sendBytes(Buffer.from(webcastPushFrame.finish()));
+
+    }
+
+
+    /**
+     * Acknowledge the message was received
+     */
+    protected sendAck({ logId, protoMessageFetchResult: { internalExt } }: DecodedWebcastPushFrame): void {
+
+        // Always send an ACK for the message
+        if (!logId) {
+            return;
+        }
+
+        const webcastPushFrame: BinaryWriter = createBaseWebcastPushFrame(
+            {
+                logId: logId,
+                payloadEncoding: 'pb',
+                payloadType: 'ack',
+                payload: textEncoder.encode(internalExt)
+            }
+        );
+
+        this.sendBytes(Buffer.from(webcastPushFrame.finish()));
     }
 
     /**
