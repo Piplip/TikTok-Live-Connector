@@ -10,6 +10,7 @@ import * as zlib from 'node:zlib';
 import * as util from 'node:util';
 import { InvalidSchemaNameError, InvalidUniqueIdError } from '@/types/errors';
 import { DevicePreset } from '@/lib/config';
+import { BinaryWriter } from '@bufbuild/protobuf/wire';
 
 const unzip = util.promisify(zlib.unzip);
 
@@ -20,20 +21,6 @@ function hasProtoName(protoName: string): boolean {
 export const WebcastDeserializeConfig: IWebcastDeserializeConfig = {
     skipMessageTypes: []
 };
-
-/**
- * Find the messages defined in the TikTok protobuf schema
- */
-async function getTikTokSchemaNames(): Promise<string[]> {
-    return Object.keys(tikTokSchema);
-}
-
-/**
- * Find the Webcast messages defined in the TikTok protobuf schema
- */
-async function getWebcastEvents(): Promise<string[]> {
-    return (await getTikTokSchemaNames()).filter((message) => message.startsWith('Webcast'));
-}
 
 export function deserializeMessage<T extends keyof WebcastMessage>(
     protoName: T,
@@ -73,16 +60,17 @@ export async function deserializeWebSocketMessage(binaryMessage: Uint8Array): Pr
     const rawWebcastWebSocketMessage = WebcastPushFrame.decode(binaryMessage);
     let protoMessageFetchResult: ProtoMessageFetchResult | undefined = undefined;
 
-    if (rawWebcastWebSocketMessage.type === 'msg') {
-        let binary: Uint8Array = rawWebcastWebSocketMessage.binary;
+    // Decode ANY protobuf-encoded payloads
+    if (rawWebcastWebSocketMessage.payloadEncoding === 'pb' && rawWebcastWebSocketMessage.payload) {
+        let binary: Uint8Array = rawWebcastWebSocketMessage.payload;
 
         // Decompress binary (if gzip compressed)
         // https://www.rfc-editor.org/rfc/rfc1950.html
         if (binary && binary.length > 2 && binary[0] === 0x1f && binary[1] === 0x8b && binary[2] === 0x08) {
-            rawWebcastWebSocketMessage.binary = await unzip(binary);
+            rawWebcastWebSocketMessage.payload = await unzip(binary);
         }
 
-        protoMessageFetchResult = deserializeMessage('ProtoMessageFetchResult', Buffer.from(rawWebcastWebSocketMessage.binary));
+        protoMessageFetchResult = deserializeMessage('ProtoMessageFetchResult', Buffer.from(rawWebcastWebSocketMessage.payload));
     }
 
     const decodedContainer: DecodedWebcastPushFrame = rawWebcastWebSocketMessage;
@@ -125,4 +113,28 @@ export function generateDeviceId() {
         digits += Math.floor(Math.random() * 10);
     }
     return digits;
+}
+
+export function createBaseWebcastPushFrame(overrides: Partial<WebcastPushFrame>): BinaryWriter {
+    // Basically, we need to set it to "0" so that it DOES NOT send the field(s)
+    const undefinedNum: string = '0';
+
+    overrides = Object.fromEntries(
+        Object.entries(overrides).filter(([_, value]) => value !== undefined)
+    );
+
+    return WebcastPushFrame.encode(
+        {
+            seqId: undefinedNum,
+            logId: undefinedNum,
+            payloadEncoding: 'pb',
+            payloadType: 'msg',
+            payload: new Uint8Array(),
+            service: undefinedNum,
+            method: undefinedNum,
+            headers: {},
+            ...overrides
+        }
+    );
+
 }
