@@ -9,13 +9,13 @@ import {
     WebcastLinkMicArmies,
     WebcastLinkMicBattle,
     WebcastLiveIntroMessage,
-    WebcastMemberMessage,
+    WebcastMemberMessage, WebcastPushFrame,
     WebcastQuestionNewMessage,
     WebcastRoomUserSeqMessage,
     WebcastSocialMessage,
     WebcastSubNotifyMessage
 } from '@/types//tiktok-schema';
-import { RoomGiftInfo, RoomInfo, WebcastEventMessage, WebcastMessage } from '@/types/client';
+import { DecodedWebcastPushFrame, RoomGiftInfo, RoomInfo, WebcastEventMessage, WebcastMessage } from '@/types/client';
 import TikTokWsClient from '@/lib/ws/lib/ws-client';
 
 export enum ControlEvent {
@@ -26,8 +26,8 @@ export enum ControlEvent {
     DECODED_DATA = 'decodedData',
     WEBSOCKET_CONNECTED = 'websocketConnected',
     WEBSOCKET_DATA = 'websocketData',
+    ENTER_ROOM = 'enterRoom',
 }
-
 
 export enum WebcastEvent {
     // Old Events - Added 1.X.X
@@ -97,6 +97,7 @@ export type ClientEventMap = {
     [ControlEvent.RAW_DATA]: (type: string, data: Uint8Array) => void | Promise<void>,
     [ControlEvent.DECODED_DATA]: (type: string, event: any, binary: Uint8Array) => void | Promise<void>,
     [ControlEvent.WEBSOCKET_CONNECTED]: EventHandler<TikTokWsClient>,
+    [ControlEvent.ENTER_ROOM]: EventHandler<DecodedWebcastPushFrame>,
 
     // Old Message Events - Added 1.X.X
     [WebcastEvent.CHAT]: EventHandler<WebcastChatMessage>,
