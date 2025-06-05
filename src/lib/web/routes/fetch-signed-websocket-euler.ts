@@ -80,7 +80,7 @@ export class FetchSignedWebSocketFromEulerRoute extends Route<FetchSignedWebSock
                 Config.DEFAULT_HTTP_CLIENT_HEADERS['User-Agent'],
                 preferredAgentIdsParam,
                 resolvedTtTargetIdc,
-                { responseType: 'arraybuffer' }
+                true // With the latest version, we now send the im_enter_room payload, so clientEnter should be true
             ) as any;
         } catch (err: any) {
             throw new SignAPIError(ErrorReason.CONNECT_ERROR, undefined, undefined, 'Failed to connect to sign server.', null, err);

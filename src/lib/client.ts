@@ -10,7 +10,14 @@ import TypedEventEmitter from 'typed-emitter';
 import { EventEmitter } from 'node:events';
 import TikTokWsClient from '@/lib/ws/lib/ws-client';
 import Config from '@/lib/config';
-import { DecodedData, RoomGiftInfo, RoomInfo, TikTokLiveConnectionOptions, WebSocketParams } from '@/types/client';
+import {
+    DecodedData,
+    DecodedWebcastPushFrame,
+    RoomGiftInfo,
+    RoomInfo,
+    TikTokLiveConnectionOptions,
+    WebSocketParams
+} from '@/types/client';
 import { validateAndNormalizeUniqueId } from '@/lib/utilities';
 import { RoomInfoResponse, TikTokWebClient } from '@/lib/web';
 import { EulerSigner } from '@/lib/web/lib/tiktok-signer';
@@ -272,6 +279,10 @@ export class TikTokLiveConnection extends (EventEmitter as new () => TypedEventE
         };
 
         this.wsClient = await this.setupWebsocket(protoMessageFetchResult.wsUrl, wsParams);
+
+        // Default app behaviour is to send the im_enter_room message on WebSocket connect
+        this.wsClient.switchRooms(this.roomId);
+
         this.emit(ControlEvent.WEBSOCKET_CONNECTED, this.wsClient);
 
     }
@@ -491,6 +502,7 @@ export class TikTokLiveConnection extends (EventEmitter as new () => TypedEventE
 
             wsClient.on('connectFailed', (err: any) => reject(`Websocket connection failed, ${err}`));
             wsClient.on('protoMessageFetchResult', this.processProtoMessageFetchResult.bind(this));
+            wsClient.on('imEnteredRoom', (data: DecodedWebcastPushFrame) => this.emit(ControlEvent.ENTER_ROOM, data));
             wsClient.on('webSocketData', (data: Uint8Array) => this.emit(ControlEvent.WEBSOCKET_DATA, data));
             wsClient.on('messageDecodingFailed', (err: any) => this.handleError(err, 'Websocket message decoding failed'));
             const connectTimeout = setTimeout(() => reject('Websocket not responding'), 20_000);
