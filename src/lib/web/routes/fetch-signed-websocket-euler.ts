@@ -69,7 +69,6 @@ export class FetchSignedWebSocketFromEulerRoute extends Route<FetchSignedWebSock
         }
 
         let response: AxiosResponse<ArrayBuffer>;
-
         try {
             response = await this.webClient.webSigner.webcast.fetchWebcastURL(
                 'ttlive-node',
@@ -80,7 +79,13 @@ export class FetchSignedWebSocketFromEulerRoute extends Route<FetchSignedWebSock
                 Config.DEFAULT_HTTP_CLIENT_HEADERS['User-Agent'],
                 preferredAgentIdsParam,
                 resolvedTtTargetIdc,
-                true // With the latest version, we now send the im_enter_room payload, so clientEnter should be true
+                // With the latest version, we now send the im_enter_room payload, so clientEnter should be true
+                false,
+                {
+                    // NOTE: NEVER REMOVE THIS BECAUSE FUCKING AXIOS WILL END UP TRYING TO INTERPRET THE RESPONSE
+                    // AS UTF-8 DATA AND YOU WILL FUCKING HATE YOUR LIFE
+                    responseType: 'arraybuffer'
+                }
             ) as any;
         } catch (err: any) {
             throw new SignAPIError(ErrorReason.CONNECT_ERROR, undefined, undefined, 'Failed to connect to sign server.', null, err);

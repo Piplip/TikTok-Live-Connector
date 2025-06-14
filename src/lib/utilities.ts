@@ -8,7 +8,7 @@ import {
 } from '@/types/client';
 import * as zlib from 'node:zlib';
 import * as util from 'node:util';
-import { InvalidSchemaNameError, InvalidUniqueIdError } from '@/types/errors';
+import { InvalidSchemaNameError, InvalidUniqueIdError, SchemaDecodeError } from '@/types/errors';
 import { DevicePreset } from '@/lib/config';
 import { BinaryWriter } from '@bufbuild/protobuf/wire';
 
@@ -29,7 +29,13 @@ export function deserializeMessage<T extends keyof WebcastMessage>(
 
     const messageFn: MessageFns<WebcastMessage[T]> | undefined = tikTokSchema[protoName as string];
     if (!messageFn) throw new InvalidSchemaNameError(`Invalid schema name: ${protoName}`);
-    const deserializedMessage: WebcastMessage[T] = messageFn.decode(binaryMessage);
+
+    let deserializedMessage: WebcastMessage[T];
+    try {
+        deserializedMessage = messageFn.decode(binaryMessage);
+    } catch (ex) {
+        throw new SchemaDecodeError(`Failed to decode message type: ${protoName}: ` + (ex as Error).stack);
+    }
 
     // Handle ProtoMessageFetchResult nested messages
     if (protoName === 'ProtoMessageFetchResult') {

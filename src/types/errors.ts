@@ -42,6 +42,10 @@ export class UserOfflineError extends ConnectError {
 export class InvalidSchemaNameError extends Error {
 }
 
+export class SchemaDecodeError extends Error {
+
+}
+
 export class TikTokLiveError extends Error {
     constructor(message: string) {
         super(message);
