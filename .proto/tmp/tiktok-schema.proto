@@ -4025,7 +4025,7 @@ message ProtoMessageFetchResult {
     string internalExt = 5;
     int32 fetchType = 6;
     map<string, string> wsParams = 7;
-    int64 heartBeatDuration = 8;
+    int32 heartBeatDuration = 8;
     bool needsAck = 9;
     string wsUrl = 10;
     bool isFirst = 11;

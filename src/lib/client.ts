@@ -490,17 +490,17 @@ export class TikTokLiveConnection extends (EventEmitter as new () => TypedEventE
             );
 
             // Handle the connection
-            wsClient.on('connect', (ws) => {
+            wsClient.on('open', () => {
                 clearTimeout(connectTimeout);
-                ws.on('error', (e: any) => this.handleError(e, 'WebSocket Error'));
-                ws.on('close', () => {
+                wsClient.on('error', (e: any) => this.handleError(e, 'WebSocket Error'));
+                wsClient.on('close', () => {
                     this.setDisconnected();
                     this.emit(ControlEvent.DISCONNECTED);
                 });
                 resolve(wsClient);
             });
 
-            wsClient.on('connectFailed', (err: any) => reject(`Websocket connection failed, ${err}`));
+            wsClient.on('error', (err: any) => reject(`Websocket connection failed, ${err}`));
             wsClient.on('protoMessageFetchResult', this.processProtoMessageFetchResult.bind(this));
             wsClient.on('imEnteredRoom', (data: DecodedWebcastPushFrame) => this.emit(ControlEvent.ENTER_ROOM, data));
             wsClient.on('webSocketData', (data: Uint8Array) => this.emit(ControlEvent.WEBSOCKET_DATA, data));

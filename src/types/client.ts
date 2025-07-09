@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios';
-import * as http from 'node:http';
 import * as tikTokSchema from '@/types/tiktok-schema';
 import { MessageFns, ProtoMessageFetchResult, WebcastPushFrame } from '@/types/tiktok-schema';
+import { ClientOptions } from 'ws';
 
 export type TikTokLiveConnectionOptions = {
     processInitialData: boolean;
@@ -23,7 +23,7 @@ export type TikTokLiveConnectionOptions = {
 
     wsClientHeaders: Record<string, string>;
     wsClientParams: Record<string, string>;
-    wsClientOptions: http.RequestOptions;
+    wsClientOptions: ClientOptions;
 
     // Override the default websocket provider
     signedWebSocketProvider?: (props: FetchSignedWebSocketParams) => Promise<ProtoMessageFetchResult>
