@@ -138,3 +138,5 @@ ws-test.ts
 publish.ts
 
 pnpm-lock.yaml
+test-decoding.ts
+unzip-test.ts
