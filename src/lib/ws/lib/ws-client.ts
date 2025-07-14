@@ -74,7 +74,6 @@ export default class TikTokWsClient extends (WebSocket as TypedWebSocket) {
     protected onDisconnect() {
         clearInterval(this.pingInterval);
         this.pingInterval = null;
-        this.emit('close');
     }
 
     /**
