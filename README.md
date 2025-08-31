@@ -31,20 +31,6 @@ and [Battles](#linkmicbattle) can be tracked.
 > Due to a change on the part of TikTok, versions prior **v1.1.7** are no longer functional. If you are using one of
 > these versions, upgrade to the latest version using the `npm i tiktok-live-connector` command.
 
-### 📌 2.X.X Now Available - Upgrade Now!
-
-We are thrilled to announce that the 2.0.0 release of TikTok Live Connector is now available!
-This release converts the package to exclusively typescript-based, also providing complete backwards compatibility for
-users.
-
-#### Upgrade Guide
-
-- Install via `npm i tiktok-live-connector@2.0.0`
-- Switch `WebcastPushConnection` to `TikTokLiveConnection` (or keep for legacy support)
-- Switch Event Names to `WebcastEvent.EVENT_NAME` from `event_name` format
-- That's it! You're good to go!
-- If you have any issues, please open an issue on GitHub or ask on [Discord](https://discord.gg/2c6kX6g3Pa).
-
 #### Breaking Changes
 
 - `WebcastPushConnection` has been renamed to `TikTokLiveConnection`
