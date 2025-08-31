@@ -16,7 +16,7 @@ and [Battles](#linkmicbattle) can be tracked.
 ![Forks](https://img.shields.io/github/forks/zerodytrash/tiktok-live-connector?style=flat&color=0274b5&alt=1)
 
 > [!NOTE]
-> This is not an official API. It is a reverse engineering project. You are responsible for your usage of this library.
+> This is <strong>not</strong> a production-ready API. It is a reverse engineering project. Use the [WebSocket API](https://www.eulerstream.com/websockets) for production.
 
 > [!TIP]
 > An example project is available
