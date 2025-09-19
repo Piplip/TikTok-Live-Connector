@@ -307,7 +307,7 @@ export class TikTokLiveConnection extends (EventEmitter as new () => TypedEventE
         // Method 1
         try {
             const roomInfo = await this.webClient.fetchRoomInfoFromHtml({ uniqueId: uniqueId });
-            const roomId = roomInfo.liveRoomUserInfo.liveRoom.roomId;
+            const roomId = roomInfo.liveRoomUserInfo.liveRoom.roomId || roomInfo.liveRoomUserInfo.user.roomId;
             if (!roomId) throw new Error('Failed to extract Room ID from HTML.');
             return roomId;
         } catch (ex) {
