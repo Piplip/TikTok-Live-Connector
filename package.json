@@ -1,6 +1,6 @@
 {
-    "name": "tiktok-live-connector",
-    "version": "2.0.7-beta1",
+    "name": "ttl-connector",
+    "version": "1.0.1",
     "description": "Node.js library to receive live stream chat events like comments and gifts from TikTok LIVE.",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
@@ -16,12 +16,8 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/zerodytrash/TikTok-Live-Connector.git"
+        "url": "git+https://github.com/Piplip/TikTok-Live-Connector.git"
     },
-    "funding": [
-        "https://buymeacoffee.com/isaackogan",
-        "https://buymeacoffee.com/zerody"
-    ],
     "keywords": [
         "tiktok",
         "tiktok live",
@@ -40,12 +36,9 @@
         "broadcast",
         "reader"
     ],
-    "author": "zerodytrash",
+    "author": "Piplip",
     "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/zerodytrash/TikTok-Live-Connector/issues"
-    },
-    "homepage": "https://github.com/zerodytrash/TikTok-Live-Connector#readme",
+    "homepage": "https://github.com/Piplip/TikTok-Live-Connector?tab=readme-ov-file",
     "dependencies": {
         "@bufbuild/protobuf": "^2.2.5",
         "@eulerstream/euler-api-sdk": "^0.1.1",
@@ -66,6 +59,7 @@
         "prettier": "2.5.1",
         "ts-proto": "^2.6.1",
         "tsc-alias": "^1.8.15",
-        "typescript": "^4.8.2"
+        "typescript": "^4.8.2",
+        "tsx": "^4.20.5"
     }
 }

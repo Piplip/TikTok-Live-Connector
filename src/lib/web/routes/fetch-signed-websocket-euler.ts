@@ -77,9 +77,8 @@ export class FetchSignedWebSocketFromEulerRoute extends Route<FetchSignedWebSock
                 this.webClient.clientParams?.cursor ?? undefined,
                 resolvedSessionId,
                 Config.DEFAULT_HTTP_CLIENT_HEADERS['User-Agent'],
-                preferredAgentIdsParam,
+                // preferredAgentIdsParam,
                 resolvedTtTargetIdc,
-                // With the latest version, we now send the im_enter_room payload, so clientEnter should be true
                 false,
                 {
                     // NOTE: NEVER REMOVE THIS BECAUSE FUCKING AXIOS WILL END UP TRYING TO INTERPRET THE RESPONSE
